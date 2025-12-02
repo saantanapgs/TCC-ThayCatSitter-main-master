@@ -190,6 +190,8 @@ export default function Clientes({
                         <View style={style.divSubTitle}>
                             <Text style={style.subTitleOrange}>Gerencie </Text>
                             <Text style={style.subTitle}>seus </Text>
+                            <Text style={style.subTitleOrange}>clientes </Text>
+                            <Text style={style.subTitle}>e </Text>
                             <Text style={style.subTitleOrange}>gatinhos </Text>
                             <Text style={style.subTitle}>cadastrados</Text>
                             <Text style={style.subTitleOrange}>.</Text>

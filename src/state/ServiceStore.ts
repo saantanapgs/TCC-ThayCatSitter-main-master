@@ -1,74 +1,129 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// 🔗 Troque pelo endpoint do teu backend hospedado no Railway:
 const API_URL = "https://catsitterapidb-main.onrender.com";
 
 export interface Service {
-    time: string;
-    id: number;
-    petName: string;
-    serviceType: string;
-    date: string;
-    notes?: string;
-    userId: number;
-    adminId: number; // 👈 Necessário para a filtragem
-    user?: {
-        name: string;
-        email: string;
-    };
-    price: number;
+  time: string;
+  id: number;
+  petName: string;
+  serviceType: string;
+  date: string;
+  notes?: string;
+  userId: number;
+  adminId: number;
+  user?: {
+    name: string;
+    email: string;
+  };
+  price: number;
+  status?: string; 
 }
 
-// 🛑 CORREÇÃO: O hook agora recebe o adminId, mas usaremos ele para filtrar localmente.
 export function useServicesData(adminId?: number) {
-    const [allServices, setAllServices] = useState<Service[]>([]); // Armazena a lista bruta
-    const [loading, setLoading] = useState(true);
+  const [allServices, setAllServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchAllServices = async () => {
-            setLoading(true);
-            try {
-                // 🛑 1. BUSCA SEM FILTRO NA URL: Busca todos os serviços (assumindo que a API não filtra)
-                const res = await axios.get(`${API_URL}/services`);
-                setAllServices(res.data);
-            } catch (err) {
-                console.error("Erro ao buscar TODOS os serviços:", err);
-                setAllServices([]);
-            } finally {
-                setLoading(false);
-            }
-        };
-        // Buscamos os dados uma única vez, independentemente do adminId, pois a API não filtra
-        fetchAllServices();
-    }, []); 
+  const fetchServices = useCallback(async () => {
+    setLoading(true);
+    try {
+      const token = await AsyncStorage.getItem("token");
+      const storedUserId = await AsyncStorage.getItem("userId");
 
-    // 🛑 2. FILTRAGEM LOCAL: Filtra a lista completa de serviços pelo ID do administrador logado
-    const services = allServices.filter(service => 
-        // Apenas inclui o serviço se o adminId do serviço for igual ao ID do admin logado
-        service.adminId === adminId
-    );
+      let res;
 
-    // 3. Calcula dados estatísticos APENAS com os serviços filtrados
-    const totalRevenue = services.reduce((acc, s) => acc + (s.price || 0), 0);
-    
-    // Mapeamos os IDs dos clientes ÚNICOS apenas dos serviços filtrados
-    const uniqueClients = new Set(services.map((s) => s.userId)).size;
-    
-    const currentMonth = new Date().getMonth();
-    const servicesThisMonth = services.filter(
-        (s) => new Date(s.date).getMonth() === currentMonth
-    ).length;
+      if (typeof adminId === "number" && !isNaN(adminId)) {
+        res = await axios.get(`${API_URL}/services/admin/${adminId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+      } 
+      else if (storedUserId) {
+        res = await axios.get(`${API_URL}/services/user/${storedUserId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+      } 
+      else {
+        res = await axios.get(`${API_URL}/services`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+      }
 
-    const recentServices = [...services]
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-        .slice(0, 5);
+      setAllServices(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      console.error("Erro ao buscar serviços:", err);
+      setAllServices([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [adminId]);
 
-    return {
-        loading,
-        totalRevenue,
-        activeClients: uniqueClients,
-        servicesThisMonth,
-        recentServices,
-    };
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      if (!mounted) return;
+      await fetchServices();
+    })();
+    return () => { mounted = false; };
+  }, [fetchServices]);
+
+  // 🔥 CORREÇÃO DO ERRO 404 – CHAMANDO O ENDPOINT CORRETO
+  const updateServiceStatus = useCallback(
+    async (serviceId: number, newStatus: string) => {
+      try {
+        const token = await AsyncStorage.getItem("token");
+
+        // backend exige EXATAMENTE /services/:id/concluir
+        await axios.patch(
+          `${API_URL}/services/${serviceId}/concluir`,
+          {}, 
+          {
+            headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+          }
+        );
+
+        await fetchServices(); // atualiza lista
+      } catch (err) {
+        console.error("Erro ao atualizar status do serviço:", err);
+        throw err;
+      }
+    },
+    [fetchServices]
+  );
+
+  const services =
+    typeof adminId === "number" && !isNaN(adminId)
+      ? allServices.filter(
+          (service) => Number(service.adminId) === Number(adminId)
+        )
+      : allServices;
+
+  const totalRevenue = services.reduce((acc, s) => acc + (s.price || 0), 0);
+  const uniqueClients = new Set(services.map((s) => s.userId)).size;
+
+  const currentMonth = new Date().getMonth();
+  const servicesThisMonth = services.filter(
+    (s) => new Date(s.date).getMonth() === currentMonth
+  ).length;
+
+  const recentServices = [...services]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 5);
+
+  const agendados = services.filter((s) => s.status !== "concluido");
+  const concluidos = services.filter((s) => s.status === "concluido");
+
+  return {
+    loading,
+    totalRevenue,
+    activeClients: uniqueClients,
+    servicesThisMonth,
+    recentServices,
+
+    agendados,
+    concluidos,
+
+    refresh: fetchServices,
+    updateServiceStatus,
+  };
 }

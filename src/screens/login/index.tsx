@@ -13,9 +13,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts } from 'expo-font';
 import VisibleImg from '../../assets/imgs/visible.png';
 import HideImg from '../../assets/imgs/hide.png';
-// import GoogleImg from '../../assets/imgsLogos/google.png';
-// import FacebookImg from '../../assets/imgsLogos/facebook.png';
-// import LinkedinImg from '../../assets/imgsLogos/linkedin.png';
 import appLogo from '../../assets/imgsLogos/appLogo.png';
 
 import { login } from '../../services/autoService';
@@ -55,23 +52,27 @@ export default function LoginScreen({ navigation }: Props) {
     try {
       const response = await login(email, password);
 
-      console.log('Usuário logado com sucesso:', response);
+      // GARANTE QUE FUNCIONA COM QUALQUER FORMATO DE API
+      const data = response.data || response;
 
-      const { token, user } = response;
-      await AsyncStorage.setItem('token', token);  
+      const { token, user } = data;
 
-      if (token) {
-        const decoded: { role: string; userId: number } = jwtDecode(token);  
-        const userRole = decoded.role;
-
-        if (userRole === 'user') {
-          navigation.navigate('Bookings');
-        } else if (userRole === 'admin') {
-          navigation.navigate('Dashboard');
-        }
+      if (!token) {
+        Alert.alert("Erro", "Token não recebido do servidor.");
+        return;
       }
+
+      await AsyncStorage.setItem("token", token);
+
+      // Salva também o userId para listar serviços depois
+      const decoded: { role: string; userId: number } = jwtDecode(token);
+      await AsyncStorage.setItem("userId", decoded.userId.toString());
+
+      if (decoded.role === "user") navigation.navigate("Bookings");
+      if (decoded.role === "admin") navigation.navigate("Dashboard");
+
     } catch (error: any) {
-      const errorMsg = error.response?.data?.error || 'Erro ao fazer login.';
+      const errorMsg = error.response?.data?.error || "Erro ao fazer login.";
       Alert.alert('Erro', errorMsg);
     } finally {
       setLoading(false);
@@ -118,18 +119,6 @@ export default function LoginScreen({ navigation }: Props) {
             <Text style={style.bottomLinksText}>Ainda não tenho uma conta</Text>
           </TouchableOpacity>
         </View>
-{/* 
-        <View style={style.divOtherLoginWays}>
-          <View style={style.divLoginWaysImgs}>
-            <Image source={GoogleImg} style={style.LoginWaysImgGoogle} />
-          </View>
-          <View style={style.divLoginWaysImgs}>
-            <Image source={FacebookImg} style={style.LoginWaysImg} />
-          </View>
-          <View style={style.divLoginWaysImgs}>
-            <Image source={LinkedinImg} style={style.LoginWaysImg} />
-          </View>
-        </View> */}
 
         <View style={style.divBtnLogin}>
           <TouchableOpacity

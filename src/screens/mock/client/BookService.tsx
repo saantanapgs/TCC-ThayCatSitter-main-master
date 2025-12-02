@@ -527,10 +527,8 @@ export default function BookService({
                         )}
                     </Pressable>
 
-                    {/* Mensagem de erro do checkbox (aparece abaixo do botão) */}
                     {agreementError ? <Text style={style.errorText}>{agreementError}</Text> : null}
 
-                    {/* 8) Política de cancelamento - checkbox obrigatório abaixo do botão */}
                     <View style={[style.card, { marginTop: 10 }]}>
                         <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                             <Pressable

@@ -158,6 +158,12 @@ export const style = StyleSheet.create({
       fontFamily: "TitleFont",
       marginTop: 0, 
     },
-
+    sectionTitle: {
+  fontSize: 20,
+  fontWeight: "bold",
+  color: "#ff6600",
+  marginTop: 25,
+  marginBottom: 10,
+},
   
 });

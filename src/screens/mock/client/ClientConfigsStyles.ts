@@ -27,6 +27,13 @@ export const style = StyleSheet.create({
     color: "#777",
     marginTop: 5,
   },
+  sectionTitle: {
+  fontSize: 20,
+  fontWeight: "bold",
+  color: "#ff6600",
+  marginTop: 25,
+  marginBottom: 10,
+},
   logoutButton: {
     backgroundColor: "#ff5100",
     paddingVertical: 14,
@@ -88,5 +95,5 @@ export const style = StyleSheet.create({
     fontSize: 12,
     fontFamily: "TitleFont",
     marginTop: 0,
-  },
+  }
 });
