@@ -110,6 +110,12 @@ export const style = StyleSheet.create({
     fontWeight: "600",
     fontSize: 14,
   },
+    sectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 8,
+    fontFamily: "TitleFont",
+  },
 
   // --- Estado Vazio (Empty State) ---
   emptyState: {

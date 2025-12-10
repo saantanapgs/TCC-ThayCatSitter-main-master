@@ -205,7 +205,7 @@ export default function ClientDashboard({
         </View>
 
         {/* ===================== SERVIÇOS AGENDADOS ===================== */}
-        <Text style={style.sectionTitle}>Serviços Agendados</Text>
+        <Text style={style.sectionTitle}>Seus serviços agendados</Text>
 
         {agendados.length === 0 ? (
           <View style={style.emptyState}>

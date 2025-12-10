@@ -180,7 +180,7 @@ export default function Clientes({
         <View style={style.mainDiv}>
             {/* O ScrollView contém o conteúdo rolavel */}
             <View style={style.divClientsList}>
-                <ScrollView contentContainerStyle={{ paddingBottom: 100 }}> {/* Padding para não esconder itens atrás do menu */}
+                <ScrollView contentContainerStyle={{ paddingBottom: 100 }}> 
                     <View style={style.divHeader}>
                         <View style={style.divMainTitleFlex}>
                             <Text style={style.title}>Seus </Text>

@@ -83,6 +83,7 @@ export default StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     marginTop: 8,
+    elevation: 4,
   },
   btnText: {
     color: "#fff",
@@ -138,11 +139,11 @@ export default StyleSheet.create({
     },
     logoutButton: {
     backgroundColor: "#ff5100",
-    paddingVertical: 14,
-    paddingHorizontal: 60,
+    paddingVertical: 12,
+    paddingHorizontal: 100,
     borderRadius: 12,
     elevation: 4,
-    marginBottom: 50
+    marginBottom: 40
   },
   logoutText: {
     color: "#fff",
@@ -152,6 +153,6 @@ export default StyleSheet.create({
   divBtnLogOut:{
     display: "flex",
     alignItems: "center",
-    marginTop: 20
+    marginTop: 200
   }
 });

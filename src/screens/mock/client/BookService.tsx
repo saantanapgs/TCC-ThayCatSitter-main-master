@@ -352,9 +352,19 @@ export default function BookService({
                         <Text style={style.title}>
                             Agende Seu <Text style={style.titleOrange}>Serviço</Text>
                         </Text>
-                        <Text style={style.subtitle}>
-                            Preencha as informações para o cuidado ideal do seu gatinho.
-                        </Text>
+                        <View style={style.divPageSubheader}>
+                            <Text style={style.subHeader}>Preencha </Text>
+                            <Text style={style.subHeader}>as </Text>
+                            <Text style={style.subHeaderOrange}>informações</Text>
+                            <Text style={style.subHeader}> para </Text>
+                            <Text style={style.subHeaderOrange}>o</Text>
+                            <Text style={style.subHeader}> cuidado </Text>
+                            <Text style={style.subHeaderOrange}>ideal</Text>
+                            <Text style={style.subHeader}> do seu </Text>
+                            <Text style={style.subHeaderOrange}>gatinho</Text>
+                            <Text style={style.subHeader}>.</Text>
+
+                        </View>
                     </View>
 
                     {/* 1) Tipo de serviço (radio) */}
@@ -517,6 +527,10 @@ export default function BookService({
                         <TextInput style={style.input} placeholder="Necessidades Especiais (opcional)" multiline value={petNeeds} onChangeText={setPetNeeds} editable={!isLoading}/>
                     </View>
 
+                    <View style={style.divTotalPriceText}>
+                        <Text>Valor total: R$ {calculatePrice().toFixed(2).replace(".", ",")}</Text>
+                    </View>
+
                     {/* 7) Botão Contratar serviço (após 'Seus Dados') */}
                     <Pressable style={style.scheduleButton} onPress={handleBooking} disabled={isLoading || currentUserId === null}>
                          {/* Usa o ActivityIndicator se estiver carregando */}
@@ -549,20 +563,15 @@ export default function BookService({
                             </Text>
                         </View>
                     </View>
-
-                    {/* 9) Valor total (sempre visível) */}
-                    <View style={style.divTotalPriceText}>
-                        <Text>Valor total: R$ {calculatePrice().toFixed(2).replace(".", ",")}</Text>
-                    </View>
-
-                    {/* 10) WhatsApp flutuante e extra grande */}
-                    <Pressable style={style.smallWhatsAppButton} onPress={handleWhatsappPress} disabled={isLoading}>
-                        <Text style={style.smallWhatsAppButtonText}>WhatsApp</Text>
-                    </Pressable>
-                    <Pressable style={style.scheduleButtonSecondary} onPress={handleWhatsappPress} disabled={isLoading}>
-                        <Text style={style.scheduleButtonText}>Conversar no WhatsApp</Text>
-                    </Pressable>
                 </ScrollView>
+
+                {/* Botão do ZAP */}
+                <Pressable style={style.floatingWhatsappButton} onPress={handleWhatsappPress} disabled={isLoading}>
+                    <Image
+                        source={require("../../../assets/imgs/whatsapp.png")}
+                        style={style.floatingWhatsappIcon}
+                    />
+                </Pressable>
 
                 {/* Menu inferior */}
                 <View style={style.bottomMenu}>
@@ -575,8 +584,7 @@ export default function BookService({
                         style={style.bottomMenuItem}
                         onPress={() =>
                             navigation.navigate("ClientDashboard", { clientName: clientName || "Cliente Padrão" })
-                        }
-                    >
+                        }>
                         <Image style={style.bottomMenuImages} source={ClientsMenuIcon} />
                         <Text style={style.textsBottomMenu}>Seu Pet</Text>
                     </Pressable>

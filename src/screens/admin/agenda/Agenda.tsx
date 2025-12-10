@@ -137,20 +137,20 @@ export default function Agenda({
         </Text>
 
         <View style={{ flexDirection: "row", gap: 8 }}>
-          <Pressable
+          {/* <Pressable
             style={style.btnEdit}
             onPress={() => navigation.navigate("Bookings")}
           >
             <Text style={style.btnEditAgenda}>Editar</Text>
-          </Pressable>
+          </Pressable> */}
 
           {/* Botão Concluir aparece apenas se ainda NÃO estiver concluído */}
           {item.status !== "concluido" && (
             <Pressable
-              style={[style.btnEdit, { backgroundColor: "#4caf50" }]}
+              style={[style.btnEdit, { backgroundColor: "#ffffffff" }]}
               onPress={() => handleConcluir(item)}
             >
-              <Text style={[style.btnEditAgenda, { color: "#fff" }]}>Concluir</Text>
+              <Text style={[style.btnEditAgenda, { color: "#000000ff" }]}>Concluir</Text>
             </Pressable>
           )}
         </View>
@@ -214,6 +214,7 @@ export default function Agenda({
             data={concluidos.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())}
             keyExtractor={(item) => item.id.toString()}
             renderItem={renderAgendaItem}
+            contentContainerStyle={{ paddingBottom: 120 }} 
           />
         )}
 

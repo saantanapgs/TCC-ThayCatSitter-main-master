@@ -21,7 +21,6 @@ export default function CancellationTerms({
             - Cancelamentos entre 24h e 48h: taxa de 50% do valor.{"\n"}
             - Cancelamentos com menos de 24h: sem reembolso.{"\n"}
             - Reagendamentos são permitidos uma vez, dependendo da disponibilidade.{"\n"}
-            {"\n"}(Coloque aqui seus termos reais; este texto é apenas um exemplo.)
           </Text>
         </View>
 

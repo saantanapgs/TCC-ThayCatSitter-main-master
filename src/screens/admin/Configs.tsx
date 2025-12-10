@@ -1,40 +1,105 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TextInput,
   Pressable,
-  Switch,
   Image,
   ScrollView,
   TouchableOpacity,
   Alert,
 } from "react-native";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { CommonActions } from "@react-navigation/native";
+
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../../App";
+
 import style from "./configsStyles";
+
+// Ícones do menu inferior
 import DashboardMenuIcon from "../../assets/adminDashboard/dashboardIcon.png";
 import AgendaMenuIcon from "../../assets/adminDashboard/agendaIcon.png";
 import ClientsMenuIcon from "../../assets/adminDashboard/clientsIcon.png";
 import SettingsMenuIcon from "../../assets/adminDashboard/settingsIcon.png";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { CommonActions } from "@react-navigation/native";
+
+const API_URL = "https://catsitterapidb-main.onrender.com";
 
 export default function Configuracoes({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, "Configuracoes">) {
-  // Estados
-  const [nome, setNome] = useState("Thaysla Girhana");
-  const [email, setEmail] = useState("petsitterthay@gmail.com");
-  const [telefone, setTelefone] = useState("(79) 9 9640-5353");
-  const [whatsapp, setWhatsapp] = useState("(79) 9 9640-5353");
-  const [precoDiaria, setPrecoDiaria] = useState("40.00");
-  const [precoPernoite, setPrecoPernoite] = useState("80.00");
-  const [horaInicio, setHoraInicio] = useState("08:00");
-  const [horaFim, setHoraFim] = useState("20:00");
-  const [intervalo, setIntervalo] = useState("60");
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  const [senhaAtual, setSenhaAtual] = useState("");
+  const [novaSenha, setNovaSenha] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
+  const [userId, setUserId] = useState<number | null>(null);
+  const [token, setToken] = useState("");
 
-  // Função de Logout movida para dentro do componente
+  // CARREGAR DADOS DO ADMIN
+  useEffect(() => {
+    async function loadAdmin() {
+      const storedToken = await AsyncStorage.getItem("token");
+      if (!storedToken) return;
+
+      setToken(storedToken);
+
+      try {
+        const response = await axios.get(`${API_URL}/me`, {
+          headers: { Authorization: `Bearer ${storedToken}` },
+        });
+
+        setNome(response.data.name);
+        setEmail(response.data.email);
+        setUserId(response.data.id);
+      } catch (err) {
+        console.log("Erro ao carregar perfil:", err);
+      }
+    }
+    loadAdmin();
+  }, []);
+
+  // SALVAR ALTERAÇÕES
+  const salvarAlteracoes = async () => {
+    if (!userId) return;
+
+    if (novaSenha !== confirmarSenha) {
+      Alert.alert("Erro", "A confirmação da senha não coincide.");
+      return;
+    }
+
+    try {
+      // ALTERAR NOME E EMAIL
+      await axios.put(
+        `${API_URL}/admin/update`,
+        { id: userId, name: nome, email: email },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // ALTERAR SENHA, SE PREENCHIDA
+      if (senhaAtual && novaSenha) {
+        await axios.put(
+          `${API_URL}/admin/change-password`,
+          {
+            id: userId,
+            oldPassword: senhaAtual,
+            newPassword: novaSenha,
+          },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
+
+      Alert.alert("Sucesso", "Informações atualizadas!");
+      setSenhaAtual("");
+      setNovaSenha("");
+      setConfirmarSenha("");
+    } catch (err) {
+      console.log("Erro ao salvar:", err);
+      Alert.alert("Erro", "Não foi possível atualizar.");
+    }
+  };
+
   const handleLogout = async () => {
     Alert.alert("Sair da conta", "Tem certeza que deseja sair?", [
       { text: "Cancelar", style: "cancel" },
@@ -42,18 +107,13 @@ export default function Configuracoes({
         text: "Sair",
         style: "destructive",
         onPress: async () => {
-          try {
-            await AsyncStorage.removeItem("token");
-            navigation.dispatch(
-              CommonActions.reset({
-                index: 0,
-                routes: [{ name: "Login" }],
-              })
-            );
-          } catch (error) {
-            console.error("Erro ao sair:", error);
-            Alert.alert("Erro", "Não foi possível sair da conta.");
-          }
+          await AsyncStorage.removeItem("token");
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: "Login" }],
+            })
+          );
         },
       },
     ]);
@@ -61,118 +121,73 @@ export default function Configuracoes({
 
   return (
     <View style={style.mainDiv}>
-      <ScrollView
-        style={style.mainDivInfos}
-        contentContainerStyle={{ paddingBottom: 140 }}
-      >
-        {/* Header */}
+      <ScrollView style={style.mainDivInfos} contentContainerStyle={{ paddingBottom: 140 }}>
+        {/* HEADER */}
         <View style={style.divPageTitle}>
           <View style={style.divHelloThayFlex}>
-            <Text style={style.mainTitle}>Suas </Text>
-            <Text style={style.mainTitleOrange}>Configurações</Text>
+            <Text style={style.mainTitle}>Painel </Text>
+            <Text style={style.mainTitleOrange}>Administrativo</Text>
           </View>
-          <View style={style.divPageSubheader}>
-            <Text style={style.subHeaderOrange}>Visualize </Text>
-            <Text style={style.subHeader}>e </Text>
-            <Text style={style.subHeader}>altere </Text>
-            <Text style={style.subHeaderOrange}>suas </Text>
-            <Text style={style.subHeaderOrange}>informações </Text>
-            <Text style={style.subHeader}>pessoais</Text>
-            <Text style={style.subHeaderOrange}>, </Text>
-            <Text style={style.subHeader}>preços </Text>
-            <Text style={style.subHeaderOrange}>e </Text>
-            <Text style={style.subHeaderOrange}>sua </Text>
-            <Text style={style.subHeader}>agenda</Text>
-            <Text style={style.subHeaderOrange}>.</Text>
-          </View>
+
+          <Text style={style.subHeader}>
+            Gerencie suas informações e segurança da conta.
+          </Text>
         </View>
 
-        {/* Informações Pessoais */}
+        {/* DADOS BÁSICOS */}
         <View style={style.card}>
-          <Text style={style.cardTitle}>👤 Informações Pessoais</Text>
+          <Text style={style.cardTitle}>👤 Informações do Administrador</Text>
+
           <Text style={style.inputLabel}>Nome:</Text>
           <TextInput
             style={style.input}
-            placeholder="Nome"
+            placeholder="Seu nome"
             value={nome}
             onChangeText={setNome}
           />
+
           <Text style={style.inputLabel}>E-mail:</Text>
           <TextInput
             style={style.input}
-            placeholder="E-mail"
+            placeholder="Seu email"
             value={email}
             onChangeText={setEmail}
           />
-          <Text style={style.inputLabel}>Telefone:</Text>
-          <TextInput
-            style={style.input}
-            placeholder="Telefone"
-            value={telefone}
-            onChangeText={setTelefone}
-          />
-          <Text style={style.inputLabel}>Whatsapp:</Text>
-          <TextInput
-            style={style.input}
-            placeholder="WhatsApp"
-            value={whatsapp}
-            onChangeText={setWhatsapp}
-          />
-          <Pressable style={style.btn}>
-            <Text style={style.btnText}>Salvar Alterações</Text>
-          </Pressable>
         </View>
 
-        {/* Configurações de Preços */}
+        {/* ALTERAR SENHA */}
         <View style={style.card}>
-          <Text style={style.cardTitle}>💲 Configurações de Preços</Text>
+          <Text style={style.cardTitle}>🔐 Alterar Senha</Text>
+
           <TextInput
             style={style.input}
-            placeholder="Preço Diária"
-            value={precoDiaria}
-            onChangeText={setPrecoDiaria}
-            keyboardType="numeric"
+            secureTextEntry
+            placeholder="Senha atual"
+            value={senhaAtual}
+            onChangeText={setSenhaAtual}
           />
+
           <TextInput
             style={style.input}
-            placeholder="Preço Pernoite"
-            value={precoPernoite}
-            onChangeText={setPrecoPernoite}
-            keyboardType="numeric"
+            secureTextEntry
+            placeholder="Nova senha"
+            value={novaSenha}
+            onChangeText={setNovaSenha}
           />
-          <Pressable style={style.btn}>
-            <Text style={style.btnText}>Atualizar Preços</Text>
-          </Pressable>
+
+          <TextInput
+            style={style.input}
+            secureTextEntry
+            placeholder="Confirmar nova senha"
+            value={confirmarSenha}
+            onChangeText={setConfirmarSenha}
+          />
         </View>
 
-        {/* Configurações de Agenda */}
-        <View style={style.card}>
-          <Text style={style.cardTitle}>📅 Configurações de Agenda</Text>
-          <TextInput
-            style={style.input}
-            placeholder="Horário de Início"
-            value={horaInicio}
-            onChangeText={setHoraInicio}
-          />
-          <TextInput
-            style={style.input}
-            placeholder="Horário de Término"
-            value={horaFim}
-            onChangeText={setHoraFim}
-          />
-          <TextInput
-            style={style.input}
-            placeholder="Intervalo entre Serviços"
-            value={intervalo}
-            onChangeText={setIntervalo}
-            keyboardType="numeric"
-          />
-          <Pressable style={style.btn}>
-            <Text style={style.btnText}>Salvar Configurações</Text>
-          </Pressable>
-        </View>
+        <TouchableOpacity style={style.btn} onPress={salvarAlteracoes}>
+          <Text style={style.btnText}>Salvar Alterações</Text>
+        </TouchableOpacity>
 
-        {/* Botão de Logout */}
         <View style={style.divBtnLogOut}>
           <TouchableOpacity style={style.logoutButton} onPress={handleLogout}>
             <Text style={style.logoutText}>Sair da Conta</Text>
@@ -180,39 +195,24 @@ export default function Configuracoes({
         </View>
       </ScrollView>
 
-      {/* Bottom Menu fixo */}
+      {/* MENU INFERIOR */}
       <View style={style.bottomMenu}>
-        <Pressable
-          style={style.bottomMenuItem}
-          onPress={() => navigation.navigate("Dashboard")}
-        >
-          <Image
-            style={style.bottomMenuDashboardImage}
-            source={DashboardMenuIcon}
-          />
+        <Pressable style={style.bottomMenuItem} onPress={() => navigation.navigate("Dashboard")}>
+          <Image style={style.bottomMenuDashboardImage} source={DashboardMenuIcon} />
           <Text style={style.textsBottomMenu}>Dashboard</Text>
         </Pressable>
 
-        <Pressable
-          style={style.bottomMenuItem}
-          onPress={() => navigation.navigate("Calendar")}
-        >
+        <Pressable style={style.bottomMenuItem} onPress={() => navigation.navigate("Calendar")}>
           <Image style={style.bottomMenuImages} source={AgendaMenuIcon} />
           <Text style={style.textsBottomMenu}>Agenda</Text>
         </Pressable>
 
-        <Pressable
-          style={style.bottomMenuItem}
-          onPress={() => navigation.navigate("Clients")}
-        >
+        <Pressable style={style.bottomMenuItem} onPress={() => navigation.navigate("Clients")}>
           <Image style={style.bottomMenuImages} source={ClientsMenuIcon} />
           <Text style={style.textsBottomMenu}>Clientes</Text>
         </Pressable>
 
-        <Pressable
-          style={style.bottomMenuItem}
-          onPress={() => navigation.navigate("Configuracoes")}
-        >
+        <Pressable style={style.bottomMenuItem} onPress={() => navigation.navigate("Configuracoes")}>
           <Image style={style.bottomMenuImages} source={SettingsMenuIcon} />
           <Text style={style.textsBottomMenu}>Configurações</Text>
         </Pressable>

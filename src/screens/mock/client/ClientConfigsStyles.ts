@@ -1,55 +1,160 @@
 import { StyleSheet, Dimensions } from "react-native";
 
-const { width, height } = Dimensions.get('window');
-
-const BOTTOM_MENU_HEIGHT = height / 9;
+const { width, height } = Dimensions.get("window");
 
 export const style = StyleSheet.create({
-  container: {
+  mainDiv: {
+    width: width,
+    height: height,
+    backgroundColor: "#ffffffff",
+    paddingTop: 60,
     flex: 1,
-    backgroundColor: "#fff",
+  },
+
+  mainDivInfos: {
+    padding: 15,
+    flex: 1,
+  },
+  divPageTitle:{
+    backgroundColor: 'transparent'
+  },
+  divHelloThayFlex:{
+    display: "flex",
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingTop: 80,
-    paddingBottom: 90,
+    marginBottom: 0
+  },
+  mainTitle:{
+    fontSize: 27,
+    fontFamily: 'TitleFont',
+  },
+  mainTitleOrange:{
+    color: "#ff5100",
+    fontSize: 27,
+    fontFamily: 'TitleFont',
+  },
+  divPageSubheader:{
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 0
+  },
+  subHeader:{
+    fontSize: 17,
+    fontFamily: 'TitleFont',
+    marginBottom: 20
+  },
+  subHeaderOrange:{
+    fontSize: 17,
+    fontFamily: 'TitleFont',
+    marginBottom: 20,
+    color: "#ff5100",
   },
   header: {
-    alignItems: "center",
-    marginBottom: 30,
+    backgroundColor: "transparent",
+    marginBottom: 10,
   },
+
   title: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#222",
+    fontSize: 27,
+    fontFamily: "TitleFont",
   },
-  subtitle: {
-    fontSize: 16,
-    color: "#777",
-    marginTop: 5,
+
+  titleOrange: {
+    fontSize: 27,
+    fontFamily: "TitleFont",
+    color: "#ff5100",
   },
+
   sectionTitle: {
-  fontSize: 20,
-  fontWeight: "bold",
-  color: "#ff6600",
-  marginTop: 25,
-  marginBottom: 10,
-},
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 8,
+    fontFamily: "TitleFont",
+  },
+
+  card: {
+    padding: 12,
+    marginBottom: 20,
+    shadowColor: "#ff5100",
+    shadowOpacity: 0.1,
+    shadowRadius: 15,
+    elevation: 15,
+    borderRadius: 15,
+    backgroundColor: "#fff",
+  },
+
+    cardTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 8,
+    fontFamily: 'TitleFont',
+  },
+
+  inputLabel: {
+    fontSize: 15,
+    marginLeft: 1,
+    marginBottom: 1,
+    color: "#333",
+    fontWeight: "600",
+  },
+
+  input: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 12,
+    backgroundColor: "#fff",
+  },
+
+  saveButton: {
+    backgroundColor: "#ff5100",
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    elevation: 4,
+    alignItems: "center",
+    marginTop: 20,
+    marginBottom: 40,
+  },
+
+  saveButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+
+    btn: {
+    backgroundColor: "#ff5100",
+    padding: 10,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 8,
+  },
+  btnText: {
+    color: "#fff",
+    fontWeight: "700",
+  },
+  
   logoutButton: {
     backgroundColor: "#ff5100",
     paddingVertical: 14,
     paddingHorizontal: 60,
     borderRadius: 12,
     elevation: 4,
-    marginBottom: 50
+    marginBottom: 50,
   },
+
   logoutText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
   },
+
   bottomMenu: {
     width: width,
-    height: BOTTOM_MENU_HEIGHT,
+    height: height / 9,
     backgroundColor: "white",
     flexDirection: "row",
     justifyContent: "space-around",
@@ -58,13 +163,6 @@ export const style = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-    elevation: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
   },
 
   bottomMenuItem: {
@@ -72,7 +170,6 @@ export const style = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    padding: 5,
   },
 
   bottomMenuDashboardImage: {
@@ -95,5 +192,11 @@ export const style = StyleSheet.create({
     fontSize: 12,
     fontFamily: "TitleFont",
     marginTop: 0,
-  }
+  },
+
+  divBtnLogOut: {
+    display: "flex",
+    alignItems: "center",
+    marginTop: 20,
+  },
 });

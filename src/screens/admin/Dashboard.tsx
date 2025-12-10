@@ -162,11 +162,11 @@ export default function Dashboard({
 
     return (
         <View style={style.mainDiv}>
-            <View style={style.topMenu}>
+            {/* <View style={style.topMenu}>
                 <View>
-                    <Image style={style.profilePictureIcon} source={profilePictureIcon} />
+                //<Image style={style.profilePictureIcon} source={profilePictureIcon} />
                 </View>
-            </View>
+            </View> */}
 
             <ScrollView style={style.mainDivInfos}>
                 {/* Header */}
